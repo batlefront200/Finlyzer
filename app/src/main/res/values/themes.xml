@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Fynlizer" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/verde_llamativo</item>
+        <item name="colorPrimaryVariant">@color/verde_oscuro</item>
+        <item name="colorOnPrimary">@color/verde_casi_negro</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondaryVariant">@color/verde_oscuro</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+        <item name="android:statusBarColor">@color/verde_llamativo</item>
+    </style>
+
+    <style name="Theme.Fynlizer" parent="Base.Theme.Fynlizer" />
+</resources>

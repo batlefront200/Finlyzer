@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/verde_casi_negro">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="10dp"
+        android:paddingStart="6dp"
+        android:background="@color/verde_background_general">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_stats"
+            app:tint="@color/verde_llamativo" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Estadísticas"
+            android:textColor="@color/verde_llamativo"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Seccion Graficos -->
+    <LinearLayout
+        android:id="@+id/graphics_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/statistics_section"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2">
+
+        <!-- Círculo 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Circulo 1 -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp">
+
+                <ProgressBar
+                    android:id="@+id/circle1_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:progress="80"
+                    android:max="100"
+                    android:progressTint="@color/verde_llamativo"
+                    android:progressBackgroundTint="@color/verde_oscuro">
+
+                </ProgressBar>
+
+                <TextView
+                    android:id="@+id/circle1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="+50.21€"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/circle1_description"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Ganancias brutas este mes"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <!-- Círculo 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp">
+
+                <ProgressBar
+                    android:id="@+id/circle2_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:progress="30"
+                    android:max="100"
+                    android:progressTint="@color/verde_llamativo"
+                    android:progressBackgroundTint="@color/verde_oscuro">
+
+                </ProgressBar>
+
+                <TextView
+                    android:id="@+id/circle2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="-2.52%"
+                    android:textColor="@color/rojo_gasto"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/circle2_description"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Ganancias relativas este año"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Sección Meses 2024 -->
+    <LinearLayout
+        android:id="@+id/statistics_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/rounded_background"
+        android:backgroundTint="@color/verde_oscuro">
+
+        <TextView
+            android:id="@+id/statistics_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Meses 2024"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ingresos"
+                android:textColor="@color/verde_llamativo"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Gastos"
+                android:textColor="@color/loaded_yellow"
+                android:textSize="12sp"
+                android:gravity="end"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#FFFFFF"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enero"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="start"
+            android:paddingBottom="0dp" />
+        <ProgressBar
+            android:id="@+id/progress_ingresos"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:progress="70"
+            android:max="100"
+            android:progressTint="@color/verde_llamativo"
+            android:progressBackgroundTint="@color/loaded_yellow"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginTop="4dp"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Febrero"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="start"
+            android:paddingBottom="0dp" />
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:progress="56"
+            android:max="100"
+            android:progressTint="@color/verde_llamativo"
+            android:progressBackgroundTint="@color/loaded_yellow"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Marzo"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="start"
+            android:paddingBottom="0dp" />
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:progress="73"
+            android:max="100"
+            android:progressTint="@color/verde_llamativo"
+            android:progressBackgroundTint="@color/loaded_yellow"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Abril"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="start"
+            android:paddingBottom="0dp" />
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:progress="82"
+            android:max="100"
+            android:progressTint="@color/verde_llamativo"
+            android:progressBackgroundTint="@color/loaded_yellow"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginTop="4dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/primer_gasto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded_background"
+        android:backgroundTint="@color/verde_casi_negro"
+        android:layout_below="@+id/graphics_section">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/black">
+
+            <!-- Fecha -->
+            <TextView
+                android:id="@+id/transaction_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mayor fuente de ingresos 2024"
+                android:textColor="@color/blanco"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"/>
+
+            <!-- Contenedor principal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:background="@color/gris_auxiliar"
+                android:padding="8dp"
+                android:elevation="4dp"
+                android:clipToPadding="false">
+
+                <!-- Ícono -->
+                <ImageView
+                    android:id="@+id/transaction_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_bulb"
+                    android:layout_marginEnd="8dp"
+                    app:tint="#FFFFFF" />
+
+                <!-- Información -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/transaction_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="SDi Sueldo Mensual"
+                        android:textColor="@color/blanco"
+                        android:textSize="18sp"
+                        android:gravity="center_vertical"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/transaction_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="94.52 %"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Footer Menu -->
+    <LinearLayout
+        android:id="@+id/footer_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/verde_background_general"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/icon_home"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_home"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/icon_expenses"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_expenses"
+            app:tint="#FFFFFF"
+            android:layout_marginStart="30dp" />
+
+        <ImageView
+            android:id="@+id/icon_stats"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_stats"
+            app:tint="@color/verde_llamativo"
+            android:layout_marginStart="30dp" />
+
+        <ImageView
+            android:id="@+id/icon_settings"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/blanco"
+            android:layout_marginStart="30dp" />
+    </LinearLayout>
+</RelativeLayout>

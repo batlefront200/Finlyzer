@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/verde_casi_negro">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="10dp"
+        android:paddingStart="6dp"
+        android:background="@color/verde_background_general">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/verde_llamativo" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Ajustes"
+            android:textColor="@color/verde_llamativo"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <!-- INTERFAZ -->
+    <LinearLayout
+        android:id="@+id/settings_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_above="@id/footer_menu"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Switch de Recordatorio Diario -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Recordatorio diario"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
+
+            <Switch
+                android:id="@+id/switch_reminder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumbTint="@color/verde_llamativo"
+                android:trackTint="#CCCCCC"/>
+        </LinearLayout>
+
+        <!-- Switch de autocompletado Gastos -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Autocompletado Gastos"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
+
+            <Switch
+                android:id="@+id/switch_autocomplete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumbTint="@color/verde_llamativo"
+                android:trackTint="#CCCCCC"/>
+        </LinearLayout>
+
+        <!-- Moneda EUR/USD -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moneda"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/btn_currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EUR"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/colored_rounded_background"
+            android:backgroundTint="@color/verde_background_general"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="5dp"/>
+
+        <Button
+            android:id="@+id/delete_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Borrar Cuenta"
+            android:textColor="@color/verde_casi_negro"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/colored_rounded_background"
+            android:backgroundTint="@color/verde_background_general"
+            android:paddingHorizontal="20dp"/>
+        
+        <!-- Cuenta Principal -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cuenta Principal"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Lista de Usuarios -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="#2F4F4F"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:elevation="4dp">
+
+            <!-- Usuario 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingStart="8dp"
+                android:background="@drawable/colored_rounded_background">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profileuser"
+                    android:backgroundTint="@android:color/black"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/circle_background"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cristian Nicolae Albu"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <!-- Usuario 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingStart="8dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profileuser"
+                    android:backgroundTint="@android:color/black"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/circle_background"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Marcos Pérez"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <!-- Usuario 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingStart="8dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profileuser"
+                    android:backgroundTint="@android:color/black"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/circle_background"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manolo Jimenez"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!-- Footer Menu -->
+    <LinearLayout
+        android:id="@+id/footer_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/verde_background_general"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/icon_home"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_home"
+            app:tint="#FFFFFF" />
+
+        <ImageView
+            android:id="@+id/icon_expenses"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_expenses"
+            app:tint="@android:color/white"
+            android:layout_marginStart="30dp"/>
+
+        <ImageView
+            android:id="@+id/icon_stats"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_stats"
+            app:tint="#FFFFFF"
+            android:layout_marginStart="30dp"/>
+
+        <ImageView
+            android:id="@+id/icon_settings"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/verde_llamativo"
+            android:layout_marginStart="30dp"/>
+    </LinearLayout>
+
+</RelativeLayout>

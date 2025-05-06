@@ -1,0 +1,9 @@
+<!-- res/drawable/circle_button.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/verde_llamativo" />
+    <size
+        android:width="60dp"
+        android:height="60dp" />
+    <corners android:radius="30dp" />
+</shape>

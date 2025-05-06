@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="verde_llamativo">#bdf352</color>
+    <color name="verde_oscuro">#4f706f</color>
+    <color name="verde_background_general">#0D1F1B</color>
+    <color name="verde_casi_negro">#081614</color>
+    <color name="gris_auxiliar">#566f6f</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="loaded_yellow">#fae24b</color>
+    <color name="rojo_gasto">#d92f21</color>
+    <color name="rojo_cancelar">#675c5c</color>
+</resources>
