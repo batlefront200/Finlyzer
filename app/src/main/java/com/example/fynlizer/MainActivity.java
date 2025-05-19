@@ -1,5 +1,6 @@
 package com.example.fynlizer;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,7 +22,10 @@ import com.example.fynlizer.Activities.GastosActivity;
 import com.example.fynlizer.Activities.HomeActivity;
 import com.example.fynlizer.Activities.NewAccountActivity;
 import com.example.fynlizer.Activities.NewGastoActivity;
+import com.example.fynlizer.Database.ConfigHandler;
 import com.example.fynlizer.Database.LocalDatabaseHelper;
+import com.example.fynlizer.Database.RemoteDatabaseHelper;
+import com.example.fynlizer.Database.RemotePostgREST;
 import com.example.fynlizer.Implementaciones.*;
 import com.example.fynlizer.DAOClases.*;
 import com.example.fynlizer.Session.SessionController;
@@ -29,10 +34,17 @@ import java.util.List;
 import android.util.Log;
 
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     // Guardo aqui la conexion a la db local para trabajar con ella
     // No creo nuevas instancias en cada DAO por optimización
+
+    private void iniciarSincronizacion() {
+        Log.d("MainActivity", "Sincronización iniciada con PostgREST.");
+        new RemotePostgREST(this);
+    }
 
     private void configurarUsuarioPrimeraVez() {
         Log.i("TAG", "Configurar Usuario primera vez entrado");
@@ -60,11 +72,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Dejar vacío para bloquear el volver atrás con la flechita
+            }
+        });
 
         // Bindear Boton Añadir Actividad
         Button addButton = findViewById(R.id.add_button);
@@ -82,13 +102,20 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // LOGICA BASE DE DATOS
+        // INSTANCIA BASE DE DATOS
         if(SessionController.dbInstance == null) {
             LocalDatabaseHelper localDbHelper = LocalDatabaseHelper.getInstance(this);
             SessionController.dbInstance = localDbHelper.getDatabase();
         }
+        // INSTANCIA CONFIG
+        if(SessionController.configInstance == null) {
+            SessionController.configInstance = ConfigHandler.getInstance(getApplicationContext());
+        }
 
         configurarUsuarioPrimeraVez();
+
+        // Sincronización
+        iniciarSincronizacion();
 
         CuentaDAO daoCuenta = new CuentaDAO(SessionController.dbInstance);
         List<Cuenta> cuentas = daoCuenta.getAll();
@@ -100,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
             View itemView = inflater.inflate(R.layout.item_cuenta, linearLayoutContainer, false);
 
             TextView userBalanceTextView = itemView.findViewById(R.id.user_balance);
-            userBalanceTextView.setText(cuenta.nombreCuenta + "\n(" + cuenta.balanceTotal + "€)");
+            userBalanceTextView.setText(String.format("%s\n(%.2f €)", cuenta.nombreCuenta, cuenta.balanceTotal));
+            // userBalanceTextView.setText(cuenta.nombreCuenta + "\n(" + cuenta.balanceTotal + "€)");
 
             linearLayoutContainer.addView(itemView);
 

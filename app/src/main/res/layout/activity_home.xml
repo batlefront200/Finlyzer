@@ -92,6 +92,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/ingresos_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="240,95 €"
@@ -114,6 +115,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/gastos_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="190,74 €"
@@ -122,123 +124,15 @@
             </LinearLayout>
 
             <!-- Progress Bar -->
-            <LinearLayout
+            <ProgressBar
+                android:id="@+id/progressBarIngresosGastos"
                 android:layout_width="match_parent"
                 android:layout_height="6dp"
-                android:background="@color/loaded_yellow"
-                android:layout_marginTop="4dp">
-
-                <View
-                    android:layout_width="280dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/verde_llamativo" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-
-    <!-- Seccion Graficos -->
-    <LinearLayout
-        android:id="@+id/graphics_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/last_movement_section"
-        android:layout_margin="16dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:weightSum="2">
-
-        <!-- Círculo 1 -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <!-- Circulo 1 -->
-            <FrameLayout
-                android:layout_width="120dp"
-                android:layout_height="120dp">
-
-                <ProgressBar
-                    android:id="@+id/circle1_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:progress="80"
-                    android:max="100"
-                    android:progressTint="@color/verde_llamativo"
-                    android:progressBackgroundTint="@color/verde_oscuro">
-
-                </ProgressBar>
-
-                <TextView
-                    android:id="@+id/circle1_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="+50.21€"
-                    android:textColor="@color/verde_llamativo"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/circle1_description"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="Ganancias brutas este mes"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <!-- Círculo 2 -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <FrameLayout
-                android:layout_width="120dp"
-                android:layout_height="120dp">
-
-                <ProgressBar
-                    android:id="@+id/circle2_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:progress="30"
-                    android:max="100"
-                    android:progressTint="@color/verde_llamativo"
-                    android:progressBackgroundTint="@color/verde_oscuro">
-
-                </ProgressBar>
-
-                <TextView
-                    android:id="@+id/circle2_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="-2.52%"
-                    android:textColor="@color/rojo_gasto"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/circle2_description"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="Ganancias relativas este año"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp" />
+                android:progressBackgroundTint="@color/loaded_yellow"
+                android:progressTint="@color/verde_llamativo"
+                android:progress="50"
+                android:layout_marginTop="4dp"
+                style="?android:attr/progressBarStyleHorizontal" />
         </LinearLayout>
     </LinearLayout>
 
@@ -274,13 +168,126 @@
             android:layout_marginTop="4dp" />
     </LinearLayout>
 
+    <!-- Seccion Graficos -->
+    <LinearLayout
+        android:id="@+id/graphics_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/last_movement_section"
+        android:layout_margin="16dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2">
+
+        <!-- Círculo 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Circulo 1 -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/circle1_progress"
+                    style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                    android:layout_width="103dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center_horizontal"
+                    android:max="100"
+                    android:progress="80"
+                    app:indicatorColor="@color/verde_llamativo"
+                    app:indicatorDirectionCircular="clockwise"
+                    app:indicatorInset="8dp"
+                    app:trackColor="@color/rojo_gasto"
+                    app:trackThickness="3dp" />
+
+                <TextView
+                    android:id="@+id/circle1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="+50.21€"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/circle1_description"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Volumen de ingresos este mes"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <!-- Círculo 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/circle2_progress"
+                    style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:max="100"
+                    android:progress="80"
+                    app:indicatorColor="@color/verde_llamativo"
+                    app:indicatorDirectionCircular="clockwise"
+                    app:indicatorInset="8dp"
+                    app:trackColor="@color/rojo_gasto"
+                    app:trackThickness="3dp" />
+
+                <TextView
+                    android:id="@+id/circle2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="-2.52%"
+                    android:textColor="@color/verde_llamativo"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/circle2_description"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Volumen de ingresos este año"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <!-- Progreso Mes -->
     <LinearLayout
         android:id="@+id/month_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/graphics_section"
-        android:layout_margin="16dp"
+        android:layout_above="@id/footer_menu"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="16dp"
         android:orientation="vertical"
         android:gravity="center">
 

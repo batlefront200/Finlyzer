@@ -51,6 +51,8 @@
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_weight="1"
+                android:id="@+id/ingreso_btn"
+                android:backgroundTint="@color/verde_oscuro"
                 android:background="@drawable/colored_rounded_background"
                 android:orientation="vertical"
                 android:gravity="center">
@@ -75,6 +77,7 @@
                 android:layout_height="100dp"/>
 
             <LinearLayout
+                android:id="@+id/gasto_btn"
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_weight="1"
@@ -101,29 +104,36 @@
         </LinearLayout>
 
 
-        <!-- Campos de texto -->
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/editTextNombreGasto"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="32dp"
-            android:hint="Nombre del gasto"
+            android:hint="Nombre del movimiento"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
             android:textColor="#FFFFFF"
-            android:textColorHint="#FFFFFF" />
+            android:textColorHint="#FFFFFF"
+            android:inputType="text"
+            android:completionThreshold="1" />
 
         <EditText
             android:id="@+id/editTextGasto"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="12dp"
-            android:hint="0.00€"
+            android:hint="Cantidad Movida (€)"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
             android:inputType="numberDecimal"
             android:textColor="#FFFFFF"
             android:textColorHint="#FFFFFF" />
+
+        <!-- Este VIEW lo he metido para empujar lso botones hasta abajo -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <!-- Botones -->
         <LinearLayout
@@ -135,7 +145,7 @@
             android:weightSum="2">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnCrear"
+                android:id="@+id/btnCrearMovimiento"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"

@@ -13,6 +13,12 @@
         <item name="colorSecondaryVariant">@color/verde_oscuro</item>
         <item name="colorOnSecondary">@color/blanco</item>
         <item name="android:statusBarColor">@color/verde_llamativo</item>
+
+        <item name="colorControlActivated">@color/verde_llamativo</item>
+        <item name="android:colorAccent">@color/verde_llamativo</item> <!-- En algunas APIs sigue usándose -->
+        <item name="android:progressTint">@color/verde_llamativo</item> <!-- En widgets clásicos -->
+        <item name="android:progressBackgroundTint">@color/verde_oscuro</item>
+
     </style>
 
     <style name="Theme.Fynlizer" parent="Base.Theme.Fynlizer" />

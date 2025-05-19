@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.fynlizer"
-        minSdk = 21
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation("postgresql:postgresql:9.0-801.jdbc4")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/verde_casi_negro">
@@ -58,16 +59,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Recordatorio diario"
+                android:text="Sincronizar Automáticamente"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"/>
 
             <Switch
-                android:id="@+id/switch_reminder"
+                android:id="@+id/sync_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:thumbTint="@color/verde_llamativo"
-                android:trackTint="#CCCCCC"/>
+                android:trackTint="#CCCCCC"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
 
         <!-- Switch de autocompletado Gastos -->
@@ -87,11 +89,12 @@
                 android:textSize="18sp"/>
 
             <Switch
-                android:id="@+id/switch_autocomplete"
+                android:id="@+id/autocomplete_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:thumbTint="@color/verde_llamativo"
-                android:trackTint="#CCCCCC"/>
+                android:trackTint="#CCCCCC"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
 
         <!-- Moneda EUR/USD -->
@@ -101,7 +104,7 @@
             android:text="Moneda"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/btn_currency"
@@ -115,6 +118,65 @@
             android:paddingHorizontal="20dp"
             android:paddingVertical="5dp"/>
 
+        <!-- Cambiar Balance -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cambiar balance actual"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginTop="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¡ Cambiar el balance no dejará un registro de movimiento !"
+            android:textColor="#808080"
+            android:textSize="10sp"
+            android:layout_marginVertical="2dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <EditText
+                android:id="@+id/new_balance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Nueva Cantidad (€)"
+                android:background="@drawable/colored_rounded_background"
+                android:backgroundTint="@color/verde_background_general"
+                android:padding="14dp"
+                android:layout_marginRight="6dp"
+                android:inputType="numberDecimal"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
+                android:textSize="14sp"/>
+
+            <Button
+                android:id="@+id/change_balance_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cambiar"
+                android:textColor="@color/verde_casi_negro"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:background="@drawable/colored_rounded_background"
+                android:backgroundTint="@color/verde_background_general"
+                android:paddingHorizontal="6dp"/>
+        </LinearLayout>
+
+
+        <!-- Este VIEW lo he metido para empujar lso botones hasta abajo -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/delete_account"
             android:layout_width="match_parent"
@@ -122,109 +184,12 @@
             android:text="Borrar Cuenta"
             android:textColor="@color/verde_casi_negro"
             android:textSize="18sp"
+            android:gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/colored_rounded_background"
             android:backgroundTint="@color/verde_background_general"
             android:paddingHorizontal="20dp"/>
-        
-        <!-- Cuenta Principal -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cuenta Principal"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_marginTop="10dp"/>
 
-        <!-- Lista de Usuarios -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_background"
-            android:backgroundTint="#2F4F4F"
-            android:padding="12dp"
-            android:layout_marginTop="8dp"
-            android:elevation="4dp">
-
-            <!-- Usuario 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="8dp"
-                android:paddingStart="8dp"
-                android:background="@drawable/colored_rounded_background">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/profileuser"
-                    android:backgroundTint="@android:color/black"
-                    android:layout_marginEnd="12dp"
-                    android:background="@drawable/circle_background"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cristian Nicolae Albu"
-                    android:textColor="@color/verde_llamativo"
-                    android:textSize="16sp"/>
-            </LinearLayout>
-
-            <!-- Usuario 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="8dp"
-                android:paddingStart="8dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/profileuser"
-                    android:backgroundTint="@android:color/black"
-                    android:layout_marginEnd="12dp"
-                    android:background="@drawable/circle_background"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Marcos Pérez"
-                    android:textColor="@color/verde_llamativo"
-                    android:textSize="16sp"/>
-            </LinearLayout>
-
-            <!-- Usuario 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="8dp"
-                android:paddingStart="8dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/profileuser"
-                    android:backgroundTint="@android:color/black"
-                    android:layout_marginEnd="12dp"
-                    android:background="@drawable/circle_background"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Manolo Jimenez"
-                    android:textColor="@color/verde_llamativo"
-                    android:textSize="16sp"/>
-            </LinearLayout>
-
-        </LinearLayout>
     </LinearLayout>
 
 

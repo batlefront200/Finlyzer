@@ -59,16 +59,19 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp">
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/circle1_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:progress="80"
+                    style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                    android:layout_width="103dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center_horizontal"
                     android:max="100"
-                    android:progressTint="@color/verde_llamativo"
-                    android:progressBackgroundTint="@color/verde_oscuro">
-
-                </ProgressBar>
+                    android:progress="80"
+                    app:indicatorColor="@color/verde_llamativo"
+                    app:indicatorDirectionCircular="clockwise"
+                    app:indicatorInset="8dp"
+                    app:trackColor="@color/rojo_gasto"
+                    app:trackThickness="3dp" />
 
                 <TextView
                     android:id="@+id/circle1_text"
@@ -105,16 +108,19 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp">
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/circle2_progress"
+                    style="@style/Widget.MaterialComponents.CircularProgressIndicator"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:progress="30"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
                     android:max="100"
-                    android:progressTint="@color/verde_llamativo"
-                    android:progressBackgroundTint="@color/verde_oscuro">
-
-                </ProgressBar>
+                    android:progress="80"
+                    app:indicatorColor="@color/verde_llamativo"
+                    app:indicatorDirectionCircular="clockwise"
+                    app:indicatorInset="8dp"
+                    app:trackColor="@color/rojo_gasto"
+                    app:trackThickness="3dp" />
 
                 <TextView
                     android:id="@+id/circle2_text"
@@ -122,7 +128,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="-2.52%"
-                    android:textColor="@color/rojo_gasto"
+                    android:textColor="@color/verde_llamativo"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:layout_gravity="center" />
@@ -158,7 +164,7 @@
             android:id="@+id/statistics_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Meses 2024"
+            android:text="Úlitmos meses"
             android:textColor="@android:color/white"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -195,6 +201,7 @@
             android:background="#FFFFFF"/>
 
         <TextView
+            android:id="@+id/primerMes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Enero"
@@ -203,8 +210,9 @@
             android:textStyle="bold"
             android:layout_gravity="start"
             android:paddingBottom="0dp" />
+
         <ProgressBar
-            android:id="@+id/progress_ingresos"
+            android:id="@+id/primerBar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:progress="70"
@@ -216,6 +224,7 @@
 
 
         <TextView
+            android:id="@+id/segundoMes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Febrero"
@@ -225,6 +234,7 @@
             android:layout_gravity="start"
             android:paddingBottom="0dp" />
         <ProgressBar
+            android:id="@+id/segundoBar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:progress="56"
@@ -235,6 +245,7 @@
             android:layout_marginTop="4dp"/>
 
         <TextView
+            android:id="@+id/tercerMes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Marzo"
@@ -244,6 +255,7 @@
             android:layout_gravity="start"
             android:paddingBottom="0dp" />
         <ProgressBar
+            android:id="@+id/tercerBar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:progress="73"
@@ -254,6 +266,7 @@
             android:layout_marginTop="4dp"/>
 
         <TextView
+            android:id="@+id/cuartoMes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Abril"
@@ -263,6 +276,7 @@
             android:layout_gravity="start"
             android:paddingBottom="0dp" />
         <ProgressBar
+            android:id="@+id/cuartoBar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:progress="82"
@@ -274,6 +288,12 @@
 
     </LinearLayout>
 
+    <!-- Este VIEW lo he metido para empujar lso botones hasta abajo -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <LinearLayout
         android:id="@+id/primer_gasto"
         android:layout_width="match_parent"
@@ -283,7 +303,8 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_background"
         android:backgroundTint="@color/verde_casi_negro"
-        android:layout_below="@+id/graphics_section">
+        android:layout_above="@+id/footer_menu"
+        android:layout_marginBottom="16dp">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -296,7 +317,7 @@
                 android:id="@+id/transaction_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mayor fuente de ingresos 2024"
+                android:text="Mayor fuente de ingresos del mes"
                 android:textColor="@color/blanco"
                 android:textSize="14sp"
                 android:textStyle="bold"

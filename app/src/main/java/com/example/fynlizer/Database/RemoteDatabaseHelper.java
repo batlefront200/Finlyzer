@@ -9,29 +9,37 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.fynlizer.Implementaciones.Usuario;
+import com.example.fynlizer.Session.SessionController;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-public class RemoteDatabaseHelper {
+public class RemoteDatabaseHelper { // DB: WMioqAQuNCqER1jS3rL857mw
 
     private static final String TAG = "RemoteDatabaseHelper";
-    private static final String JDBC_URL = "jdbc:postgresql://ep-morning-hall-a2xkpwkn-pooler.eu-central-1.aws.neon.tech/fynlizerdb";
-    private static final String JDBC_USER = "fynlizerdb_owner";
-    private static final String JDBC_PASSWORD = "npg_98tHObxoXcpA";
+    private static final String JDBC_URL = "jdbc:postgresql://db.uxtrypgceiwzcyyrprfc.supabase.co:5432/postgres?sslmode=require";
+    private static final String JDBC_USER = "postgres";
+    private static final String JDBC_PASSWORD = "WMioqAQuNCqER1jS3rL857mw";
+
     private final Context context;
 
     public RemoteDatabaseHelper(Context context) {
         this.context = context;
-        if (isNetworkAvailable()) {
+        if (isNetworkAvailableStatic(this.context)) {
             new SyncTask().execute();
         } else {
             Log.d(TAG, "No hay conexión a internet.");
         }
     }
 
-    private boolean isNetworkAvailable() {
+    private static boolean isNetworkAvailableStatic(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null) return false;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -48,106 +56,19 @@ public class RemoteDatabaseHelper {
                 Class.forName("org.postgresql.Driver");
                 remoteConnection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
 
-                Cursor cursor = localDb.rawQuery("SELECT * FROM USUARIO", null);
-
-                /* VOY A USAR getColumnIndexOrThrow EN VEZ DE getColumnIndex porque sino da error */
-                while (cursor.moveToNext()) {
-                    int uuid = cursor.getInt(cursor.getColumnIndexOrThrow("UUID"));
-                    String codigoRecuperacion = cursor.getString(cursor.getColumnIndexOrThrow("CodigoRecuperacion"));
-                    boolean esPremium = cursor.getInt(cursor.getColumnIndexOrThrow("esUsuarioPremium")) > 0;
-                    boolean estaSync = cursor.getInt(cursor.getColumnIndexOrThrow("estaSincronizado")) > 0;
-                    String fechaSync = cursor.getString(cursor.getColumnIndexOrThrow("fechaUltimaSync"));
-
-                    String insertSQL = "INSERT INTO USUARIO (UUID, CodigoRecuperacion, esUsuarioPremium, estaSincronizado, fechaUltimaSync) " +
-                            "VALUES (?, ?, ?, ?, ?) ON CONFLICT (UUID) DO UPDATE SET " +
-                            "CodigoRecuperacion = EXCLUDED.CodigoRecuperacion, " +
-                            "esUsuarioPremium = EXCLUDED.esUsuarioPremium, " +
-                            "estaSincronizado = EXCLUDED.estaSincronizado, " +
-                            "fechaUltimaSync = EXCLUDED.fechaUltimaSync";
-
-                    try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
-                        stmt.setInt(1, uuid);
-                        stmt.setString(2, codigoRecuperacion);
-                        stmt.setBoolean(3, esPremium);
-                        stmt.setBoolean(4, estaSync);
-                        stmt.setDate(5, java.sql.Date.valueOf(fechaSync));
-                        stmt.executeUpdate();
-                    }
+                Usuario currentUser = SessionController.usuarioActual;
+                if (currentUser == null) {
+                    Log.e(TAG, "No hay usuario activo en la sesión.");
+                    return null;
                 }
-                cursor.close();
-                Log.d(TAG, "Sincronización de USUARIO completa.");
 
-                cursor = localDb.rawQuery("SELECT * FROM CUENTA", null);
-                while (cursor.moveToNext()) {
-                    int idCuenta = cursor.getInt(cursor.getColumnIndexOrThrow("idCuenta"));
-                    String nombreCuenta = cursor.getString(cursor.getColumnIndexOrThrow("nombreCuenta"));
-                    double balanceTotal = cursor.getDouble(cursor.getColumnIndexOrThrow("balanceTotal"));
-                    String monedaSeleccionada = cursor.getString(cursor.getColumnIndexOrThrow("monedaSeleccionada"));
-                    String fechaUltimoMovimiento = cursor.getString(cursor.getColumnIndexOrThrow("fechaUltimoMovimiento"));
-                    int uuid = cursor.getInt(cursor.getColumnIndexOrThrow("UUID"));
-
-                    String insertSQL = "INSERT INTO CUENTA (idCuenta, nombreCuenta, balanceTotal, monedaSeleccionada, fechaUltimoMovimiento, UUID) " +
-                            "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (idCuenta) DO UPDATE SET " +
-                            "nombreCuenta = EXCLUDED.nombreCuenta, " +
-                            "balanceTotal = EXCLUDED.balanceTotal, " +
-                            "monedaSeleccionada = EXCLUDED.monedaSeleccionada, " +
-                            "fechaUltimoMovimiento = EXCLUDED.fechaUltimoMovimiento, " +
-                            "UUID = EXCLUDED.UUID";
-
-                    try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
-                        stmt.setInt(1, idCuenta);
-                        stmt.setString(2, nombreCuenta);
-                        stmt.setDouble(3, balanceTotal);
-                        stmt.setString(4, monedaSeleccionada);
-                        stmt.setDate(5, java.sql.Date.valueOf(fechaUltimoMovimiento));
-                        stmt.setInt(6, uuid);
-                        stmt.executeUpdate();
-                    }
+                if (currentUser.fechaUltimaSync == null) {
+                    // Primera sincronización
+                    syncNewUser(remoteConnection, currentUser);
+                } else {
+                    // Usuario ya sincronizado previamente
+                    syncExistingUser(remoteConnection, localDb, currentUser);
                 }
-                cursor.close();
-                Log.d(TAG, "Sincronización de CUENTA completa.");
-
-                cursor = localDb.rawQuery("SELECT * FROM MOVIMIENTOS", null);
-                while (cursor.moveToNext()) {
-                    int idMovimiento = cursor.getInt(cursor.getColumnIndexOrThrow("idMovimiento"));
-                    String nombreFecha = cursor.getString(cursor.getColumnIndexOrThrow("nombreFecha"));
-                    double cantidadMovida = cursor.getDouble(cursor.getColumnIndexOrThrow("cantidadMovida"));
-                    boolean esUnGasto = cursor.getInt(cursor.getColumnIndexOrThrow("esUnGasto")) > 0;
-
-                    String insertSQL = "INSERT INTO MOVIMIENTOS (idMovimiento, nombreFecha, cantidadMovida, esUnGasto) " +
-                            "VALUES (?, ?, ?, ?) ON CONFLICT (idMovimiento) DO UPDATE SET " +
-                            "nombreFecha = EXCLUDED.nombreFecha, " +
-                            "cantidadMovida = EXCLUDED.cantidadMovida, " +
-                            "esUnGasto = EXCLUDED.esUnGasto";
-
-                    try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
-                        stmt.setInt(1, idMovimiento);
-                        stmt.setString(2, nombreFecha);
-                        stmt.setDouble(3, cantidadMovida);
-                        stmt.setBoolean(4, esUnGasto);
-                        stmt.executeUpdate();
-                    }
-                }
-                cursor.close();
-                Log.d(TAG, "Sincronización de MOVIMIENTOS completa.");
-
-                cursor = localDb.rawQuery("SELECT * FROM CUENTA_MOVIMIENTO", null);
-                while (cursor.moveToNext()) {
-                    int idCuenta = cursor.getInt(cursor.getColumnIndexOrThrow("idCuenta"));
-                    int idMovimiento = cursor.getInt(cursor.getColumnIndexOrThrow("idMovimiento"));
-
-                    String insertSQL = "INSERT INTO CUENTA_MOVIMIENTO (idCuenta, idMovimiento) " +
-                            "VALUES (?, ?) ON CONFLICT (idCuenta, idMovimiento) DO NOTHING";
-
-                    try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
-                        stmt.setInt(1, idCuenta);
-                        stmt.setInt(2, idMovimiento);
-                        stmt.executeUpdate();
-                    }
-                }
-                cursor.close();
-                Log.d(TAG, "Sincronización de CUENTA_MOVIMIENTO completa.");
-
 
             } catch (Exception e) {
                 Log.e(TAG, "Error durante la sincronización remota", e);
@@ -161,6 +82,108 @@ public class RemoteDatabaseHelper {
                 }
             }
             return null;
+        }
+
+        private void syncNewUser(Connection remoteConnection, Usuario currentUser) throws SQLException {
+            String insertSQL = "INSERT INTO USUARIO (CodigoRecuperacion, esUsuarioPremium, estaSincronizado, fechaUltimaSync) " +
+                    "VALUES (?, ?, ?, ?) RETURNING UUID";
+
+            try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
+                stmt.setString(1, currentUser.CodigoRecuperacion);
+                stmt.setBoolean(2, currentUser.esUsuarioPremium);
+                stmt.setBoolean(3, true);
+                stmt.setDate(4, new java.sql.Date(new Date().getTime()));
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int remoteId = rs.getInt("UUID");
+                    SessionController.configInstance.setSyncId(remoteId);
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                    currentUser.fechaUltimaSync = dateFormat.format(new Date());
+
+                    Log.d(TAG, "Usuario sincronizado con UUID remoto: " + remoteId);
+                }
+            }
+        }
+
+        private void syncExistingUser(Connection remoteConnection, SQLiteDatabase localDb, Usuario currentUser) throws SQLException {
+            int syncId = SessionController.configInstance.getSyncId();
+            if (syncId == -1) {
+                Log.e(TAG, "No se encontró el ID de sincronización para el usuario.");
+                return;
+            }
+
+            syncLocalToRemote(remoteConnection, localDb, syncId);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            currentUser.fechaUltimaSync = dateFormat.format(new Date());
+
+            Log.d(TAG, "Sincronización completada para el usuario existente.");
+        }
+
+        private void syncLocalToRemote(Connection remoteConnection, SQLiteDatabase localDb, int syncId) throws SQLException {
+            Cursor cursor;
+
+            // Sincronización de USUARIO
+            cursor = localDb.rawQuery("SELECT * FROM USUARIO WHERE UUID = ?", new String[]{String.valueOf(syncId)});
+            if (cursor.moveToFirst()) {
+                String updateSQL = "UPDATE USUARIO SET CodigoRecuperacion = ?, esUsuarioPremium = ?, estaSincronizado = ?, fechaUltimaSync = ? WHERE UUID = ?";
+
+                try (PreparedStatement stmt = remoteConnection.prepareStatement(updateSQL)) {
+                    stmt.setString(1, cursor.getString(cursor.getColumnIndexOrThrow("CodigoRecuperacion")));
+                    stmt.setBoolean(2, cursor.getInt(cursor.getColumnIndexOrThrow("esUsuarioPremium")) > 0);
+                    stmt.setBoolean(3, true);
+                    stmt.setDate(4, new java.sql.Date(new Date().getTime()));
+                    stmt.setInt(5, syncId);
+                    stmt.executeUpdate();
+                }
+            }
+            cursor.close();
+
+            // Sincronización de CUENTA
+            cursor = localDb.rawQuery("SELECT * FROM CUENTA WHERE UUID = ?", new String[]{String.valueOf(syncId)});
+            while (cursor.moveToNext()) {
+                String insertSQL = "INSERT INTO CUENTA (idCuenta, nombreCuenta, balanceTotal, monedaSeleccionada, fechaUltimoMovimiento, UUID) " +
+                        "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (idCuenta) DO UPDATE SET " +
+                        "nombreCuenta = EXCLUDED.nombreCuenta, " +
+                        "balanceTotal = EXCLUDED.balanceTotal, " +
+                        "monedaSeleccionada = EXCLUDED.monedaSeleccionada, " +
+                        "fechaUltimoMovimiento = EXCLUDED.fechaUltimoMovimiento";
+
+                try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
+                    stmt.setInt(1, cursor.getInt(cursor.getColumnIndexOrThrow("idCuenta")));
+                    stmt.setString(2, cursor.getString(cursor.getColumnIndexOrThrow("nombreCuenta")));
+                    stmt.setDouble(3, cursor.getDouble(cursor.getColumnIndexOrThrow("balanceTotal")));
+                    stmt.setString(4, cursor.getString(cursor.getColumnIndexOrThrow("monedaSeleccionada")));
+                    stmt.setDate(5, java.sql.Date.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("fechaUltimoMovimiento"))));
+                    stmt.setInt(6, syncId);
+                    stmt.executeUpdate();
+                }
+            }
+            cursor.close();
+
+            // Sincronización de MOVIMIENTOS
+            cursor = localDb.rawQuery("SELECT * FROM MOVIMIENTOS WHERE idCuenta IN (SELECT idCuenta FROM CUENTA WHERE UUID = ?)", new String[]{String.valueOf(syncId)});
+            while (cursor.moveToNext()) {
+                String insertSQL = "INSERT INTO MOVIMIENTOS (idMovimiento, nombre, fechaMovimiento, cantidadMovida, esUnGasto, idCuenta) " +
+                        "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (idMovimiento) DO UPDATE SET " +
+                        "nombre = EXCLUDED.nombre, " +
+                        "fechaMovimiento = EXCLUDED.fechaMovimiento, " +
+                        "cantidadMovida = EXCLUDED.cantidadMovida, " +
+                        "esUnGasto = EXCLUDED.esUnGasto";
+
+                try (PreparedStatement stmt = remoteConnection.prepareStatement(insertSQL)) {
+                    stmt.setInt(1, cursor.getInt(cursor.getColumnIndexOrThrow("idMovimiento")));
+                    stmt.setString(2, cursor.getString(cursor.getColumnIndexOrThrow("nombre")));
+                    stmt.setDate(3, java.sql.Date.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("fechaMovimiento"))));
+                    stmt.setDouble(4, cursor.getDouble(cursor.getColumnIndexOrThrow("cantidadMovida")));
+                    stmt.setBoolean(5, cursor.getInt(cursor.getColumnIndexOrThrow("esUnGasto")) > 0);
+                    stmt.setInt(6, cursor.getInt(cursor.getColumnIndexOrThrow("idCuenta")));
+                    stmt.executeUpdate();
+                }
+            }
+            cursor.close();
         }
     }
 }

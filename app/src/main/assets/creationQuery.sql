@@ -1,4 +1,3 @@
-
 CREATE TABLE USUARIO (
     UUID INTEGER PRIMARY KEY AUTOINCREMENT,
     CodigoRecuperacion TEXT,
@@ -14,20 +13,15 @@ CREATE TABLE CUENTA (
     monedaSeleccionada TEXT,
     fechaUltimoMovimiento DATE,
     UUID INTEGER,
-    FOREIGN KEY(UUID) REFERENCES USUARIO(UUID)
+    FOREIGN KEY(UUID) REFERENCES USUARIO(UUID) ON DELETE CASCADE
 );
 
 CREATE TABLE MOVIMIENTOS (
     idMovimiento INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombreFecha TEXT,
+    nombre TEXT,
+    fechaMovimiento DATE,
     cantidadMovida REAL,
-    esUnGasto BOOLEAN
-);
-
-CREATE TABLE CUENTA_MOVIMIENTO (
+    esUnGasto BOOLEAN,
     idCuenta INTEGER,
-    idMovimiento INTEGER,
-    PRIMARY KEY (idCuenta, idMovimiento),
-    FOREIGN KEY (idCuenta) REFERENCES CUENTA(idCuenta),
-    FOREIGN KEY (idMovimiento) REFERENCES MOVIMIENTOS(idMovimiento)
+    FOREIGN KEY(idCuenta) REFERENCES CUENTA(idCuenta) ON DELETE CASCADE
 );
