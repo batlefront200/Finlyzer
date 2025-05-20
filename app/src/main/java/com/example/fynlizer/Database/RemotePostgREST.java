@@ -130,7 +130,7 @@ public class RemotePostgREST {
                 cuentaJson.put("balanceTotal", cursor.getDouble(cursor.getColumnIndexOrThrow("balanceTotal")));
                 cuentaJson.put("monedaSeleccionada", cursor.getString(cursor.getColumnIndexOrThrow("monedaSeleccionada")));
                 cuentaJson.put("fechaUltimoMovimiento", cursor.getString(cursor.getColumnIndexOrThrow("fechaUltimoMovimiento")));
-                cuentaJson.put("UUID", syncId);  // Asignar el UUID fijo
+                cuentaJson.put("UUID", syncId);
                 cuentaArray.put(cuentaJson);
             }
             cursor.close();

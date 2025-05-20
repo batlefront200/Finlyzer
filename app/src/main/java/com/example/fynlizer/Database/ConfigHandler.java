@@ -51,8 +51,8 @@ public class ConfigHandler {
     private void createDefaultConfig() {
         config = new JSONObject();
         try {
-            config.put("sync_enabled", false);
-            config.put("autocomplete_enabled", false);
+            config.put("sync_enabled", true);
+            config.put("autocomplete_enabled", true);
             config.put("currency", "EUR");
             config.put("syncId", "0");
         } catch (JSONException e) {

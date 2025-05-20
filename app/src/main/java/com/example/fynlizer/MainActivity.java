@@ -42,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
     // No creo nuevas instancias en cada DAO por optimización
 
     private void iniciarSincronizacion() {
-        Log.d("MainActivity", "Sincronización iniciada con PostgREST.");
-        new RemotePostgREST(this);
+        if(SessionController.configInstance.isSyncEnabled()) {
+            Log.d("MainActivity", "Sincronización iniciada con PostgREST.");
+            new RemotePostgREST(this);
+        }
     }
 
     private void configurarUsuarioPrimeraVez() {
