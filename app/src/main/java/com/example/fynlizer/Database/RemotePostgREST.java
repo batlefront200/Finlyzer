@@ -8,7 +8,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.fynlizer.DAOClases.CuentaDAO;
+import com.example.fynlizer.DAOClases.MovimientoDAO;
 import com.example.fynlizer.DAOClases.UsuarioDAO;
+import com.example.fynlizer.Implementaciones.Cuenta;
+import com.example.fynlizer.Implementaciones.Movimiento;
 import com.example.fynlizer.Implementaciones.Usuario;
 import com.example.fynlizer.Session.SessionController;
 
@@ -20,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.io.*;
 
@@ -111,6 +116,7 @@ public class RemotePostgREST {
                 return;
             }
 
+            // Actualiza los datos del usuario en el servidor remoto
             JSONObject userJson = new JSONObject();
             userJson.put("uuid", syncId);
             userJson.put("codigorecuperacion", SessionController.usuarioActual.CodigoRecuperacion);
@@ -122,39 +128,50 @@ public class RemotePostgREST {
             userArray.put(userJson);
             patchData("usuario", "uuid=eq." + syncId, userArray);
 
-            Cursor cursor = localDb.rawQuery("SELECT * FROM CUENTA WHERE UUID = ?", new String[]{String.valueOf(SessionController.usuarioActual.UUID)});
+            // Instanciar DAOs
+            CuentaDAO cuentaDao = new CuentaDAO(localDb);
+            MovimientoDAO movimientoDao = new MovimientoDAO(localDb);
+
+            // Sincronizar cuentas
+            List<Cuenta> cuentas = cuentaDao.getAll();
             JSONArray cuentaArray = new JSONArray();
-            while (cursor.moveToNext()) {
+            for (Cuenta cuenta : cuentas) {
                 JSONObject cuentaJson = new JSONObject();
-                cuentaJson.put("nombreCuenta", cursor.getString(cursor.getColumnIndexOrThrow("nombreCuenta")));
-                cuentaJson.put("balanceTotal", cursor.getDouble(cursor.getColumnIndexOrThrow("balanceTotal")));
-                cuentaJson.put("monedaSeleccionada", cursor.getString(cursor.getColumnIndexOrThrow("monedaSeleccionada")));
-                cuentaJson.put("fechaUltimoMovimiento", cursor.getString(cursor.getColumnIndexOrThrow("fechaUltimoMovimiento")));
-                cuentaJson.put("UUID", syncId);
+                cuentaJson.put("nombrecuenta", cuenta.nombreCuenta);
+                cuentaJson.put("balancetotal", cuenta.balanceTotal);
+                cuentaJson.put("monedaseleccionada", cuenta.monedaSeleccionada);
+                if(cuenta.fechaUltimoMovimiento != null) {
+                    cuentaJson.put("fechaultimomovimiento", cuenta.fechaUltimoMovimiento);
+                }
+                cuentaJson.put("uuid", syncId);
+                Log.d(TAG, " CUENTA FechaUltimoMovimiento: " + cuenta.fechaUltimoMovimiento);
                 cuentaArray.put(cuentaJson);
             }
-            cursor.close();
             postData("cuenta", cuentaArray);
 
-            cursor = localDb.rawQuery(
-                    "SELECT M.* FROM MOVIMIENTOS M INNER JOIN CUENTA C ON M.idCuenta = C.idCuenta WHERE C.UUID = ?",
-                    new String[]{String.valueOf(SessionController.usuarioActual.UUID)}
-            );
-            JSONArray movimientosArray = new JSONArray();
-            while (cursor.moveToNext()) {
-                JSONObject movimientoJson = new JSONObject();
-                movimientoJson.put("nombre", cursor.getString(cursor.getColumnIndexOrThrow("nombre")));
-                movimientoJson.put("fechaMovimiento", cursor.getString(cursor.getColumnIndexOrThrow("fechaMovimiento")));
-                movimientoJson.put("cantidadMovida", cursor.getDouble(cursor.getColumnIndexOrThrow("cantidadMovida")));
-                movimientoJson.put("esUnGasto", cursor.getInt(cursor.getColumnIndexOrThrow("esUnGasto")) > 0);
-                movimientoJson.put("idCuenta", cursor.getInt(cursor.getColumnIndexOrThrow("idCuenta"))); // Esto requiere mapeo futuro
-                movimientosArray.put(movimientoJson);
-            }
-            cursor.close();
-            postData("movimientos", movimientosArray);
+            Log.d(TAG, "JSON para tabla 'cuenta': " + cuentaArray.toString());
 
+            // Sincronizar movimientos
+            JSONArray movimientosArray = new JSONArray();
+            for (Cuenta cuenta : cuentas) {
+                List<Movimiento> movimientos = movimientoDao.getAllOrderedByDateDescForAccount(cuenta.idCuenta);
+                for (Movimiento movimiento : movimientos) {
+                    JSONObject movimientoJson = new JSONObject();
+                    movimientoJson.put("nombre", movimiento.nombre);
+                    movimientoJson.put("fechamovimiento", movimiento.fechaMovimiento);
+                    movimientoJson.put("cantidadmovida", movimiento.cantidadMovida);
+                    movimientoJson.put("esungasto", movimiento.esUnGasto);
+                    movimientoJson.put("idcuenta", movimiento.idCuenta);
+                    movimientosArray.put(movimientoJson);
+                }
+            }
+            postData("movimientos", movimientosArray);
+            Log.d(TAG, "JSON para tabla 'movimientos': " + movimientosArray.toString());
+
+            // Actualiza la última sincronización del usuario
             SessionController.usuarioActual.fechaUltimaSync = getCurrentDate();
-            usuarioDAO.update(currentUser);
+            UsuarioDAO usuarioDao = new UsuarioDAO(localDb);  // Si tienes un DAO para Usuario
+            usuarioDao.update(currentUser);
             Log.d(TAG, "Sincronización completada para el usuario existente.");
         }
 
