@@ -198,12 +198,13 @@
                     style="@style/Widget.MaterialComponents.CircularProgressIndicator"
                     android:layout_width="103dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:max="100"
                     android:progress="80"
                     app:indicatorColor="@color/verde_llamativo"
                     app:indicatorDirectionCircular="clockwise"
                     app:indicatorInset="8dp"
+                    app:indicatorSize="100dp"
                     app:trackColor="@color/rojo_gasto"
                     app:trackThickness="3dp" />
 
@@ -211,12 +212,12 @@
                     android:id="@+id/circle1_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:gravity="center"
                     android:text="+50.21€"
                     android:textColor="@color/verde_llamativo"
                     android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center" />
+                    android:textStyle="bold" />
             </FrameLayout>
 
             <TextView
@@ -247,12 +248,13 @@
                     style="@style/Widget.MaterialComponents.CircularProgressIndicator"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:max="100"
                     android:progress="80"
                     app:indicatorColor="@color/verde_llamativo"
                     app:indicatorDirectionCircular="clockwise"
                     app:indicatorInset="8dp"
+                    app:indicatorSize="100dp"
                     app:trackColor="@color/rojo_gasto"
                     app:trackThickness="3dp" />
 
