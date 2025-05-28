@@ -70,4 +70,16 @@ public class CuentaDAO {
         cuenta.UUID = c.getInt(c.getColumnIndexOrThrow("UUID"));
         return cuenta;
     }
+
+    public boolean existeNombreCuentaParaUsuario(int uuid, String nombreCuenta) {
+        Cursor cursor = db.rawQuery(
+                "SELECT nombreCuenta FROM CUENTA WHERE UUID = ? AND nombreCuenta = ?",
+                new String[]{String.valueOf(uuid), nombreCuenta}
+        );
+        boolean existe = cursor.moveToFirst(); // Si hay al menos un resultado, ya existe
+        cursor.close();
+        return existe;
+    }
+
+
 }

@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -107,6 +108,71 @@ public class RemotePostgREST {
             }
         }
 
+        private void syncMovimientos(List<Movimiento> movimientosLocales, JSONArray movimientosRemotos, int idCuenta) {
+            try {
+                List<JSONObject> movimientosRemotosList = new ArrayList<>();
+                for (int i = 0; i < movimientosRemotos.length(); i++) {
+                    movimientosRemotosList.add(movimientosRemotos.getJSONObject(i));
+                }
+
+                for (Movimiento movLocal : movimientosLocales) {
+                    boolean encontrado = false;
+
+                    for (JSONObject movRemoto : movimientosRemotosList) {
+                        if (
+                                movLocal.nombre.equals(movRemoto.optString("nombre")) &&
+                                        safeEqualsDate(movLocal.fechaMovimiento, movRemoto.optString("fechamovimiento")) &&
+                                        movLocal.cantidadMovida == movRemoto.optDouble("cantidadmovida") &&
+                                        movLocal.esUnGasto == movRemoto.optBoolean("esungasto")
+                        ) {
+                            encontrado = true;
+                            break;
+                        }
+                    }
+
+                    if (!encontrado) {
+                        JSONObject nuevoMovimiento = new JSONObject();
+                        nuevoMovimiento.put("nombre", movLocal.nombre);
+                        nuevoMovimiento.put("fechamovimiento", movLocal.fechaMovimiento);
+                        nuevoMovimiento.put("cantidadmovida", movLocal.cantidadMovida);
+                        nuevoMovimiento.put("esungasto", movLocal.esUnGasto);
+                        nuevoMovimiento.put("idcuenta", SessionController.configInstance.getIdRemotoCuenta(movLocal.idCuenta));
+
+                        JSONArray arr = new JSONArray();
+                        arr.put(nuevoMovimiento);
+                        JSONObject insertado = postData("movimientos", arr);
+                        int idMovimiento = insertado.getInt("idmovimiento");
+                        SessionController.configInstance.saveMovimientoRemoto(movLocal.idMovimiento, idMovimiento);
+                        Log.d(TAG, "Insertado movimiento en remoto: " + movLocal.nombre);
+                    }
+                }
+
+                for (JSONObject movRemoto : movimientosRemotosList) {
+                    boolean encontrado = false;
+
+                    for (Movimiento movLocal : movimientosLocales) {
+                        if (
+                                movLocal.nombre.equals(movRemoto.optString("nombre")) &&
+                                        safeEqualsDate(movLocal.fechaMovimiento, movRemoto.optString("fechamovimiento")) &&
+                                        movLocal.cantidadMovida == movRemoto.optDouble("cantidadmovida") &&
+                                        movLocal.esUnGasto == movRemoto.optBoolean("esungasto")
+                        ) {
+                            encontrado = true;
+                            break;
+                        }
+                    }
+
+                    if (!encontrado) {
+                        int idMovimientoRemoto = movRemoto.getInt("idmovimiento");
+                        deleteData("movimientos", "idmovimiento=eq." + idMovimientoRemoto);
+                        Log.d(TAG, "Eliminado movimiento remoto: ID " + idMovimientoRemoto);
+                    }
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error en syncMovimientos", e);
+            }
+        }
 
 
         private void syncExistingUser(SQLiteDatabase localDb, Usuario currentUser) throws Exception {
@@ -116,11 +182,10 @@ public class RemotePostgREST {
                 return;
             }
 
-            // Actualiza los datos del usuario en el servidor remoto
             JSONObject userJson = new JSONObject();
             userJson.put("uuid", syncId);
-            userJson.put("codigorecuperacion", SessionController.usuarioActual.CodigoRecuperacion);
-            userJson.put("esusuariopremium", SessionController.usuarioActual.esUsuarioPremium);
+            userJson.put("codigorecuperacion", currentUser.CodigoRecuperacion);
+            userJson.put("esusuariopremium", currentUser.esUsuarioPremium);
             userJson.put("estasincronizado", true);
             userJson.put("fechaultimasync", getCurrentDate());
 
@@ -128,49 +193,22 @@ public class RemotePostgREST {
             userArray.put(userJson);
             patchData("usuario", "uuid=eq." + syncId, userArray);
 
-            // Instanciar DAOs
             CuentaDAO cuentaDao = new CuentaDAO(localDb);
             MovimientoDAO movimientoDao = new MovimientoDAO(localDb);
 
-            // Sincronizar cuentas
-            List<Cuenta> cuentas = cuentaDao.getAll();
-            JSONArray cuentaArray = new JSONArray();
-            for (Cuenta cuenta : cuentas) {
-                JSONObject cuentaJson = new JSONObject();
-                cuentaJson.put("nombrecuenta", cuenta.nombreCuenta);
-                cuentaJson.put("balancetotal", cuenta.balanceTotal);
-                cuentaJson.put("monedaseleccionada", cuenta.monedaSeleccionada);
-                if(cuenta.fechaUltimoMovimiento != null) {
-                    cuentaJson.put("fechaultimomovimiento", cuenta.fechaUltimoMovimiento);
-                }
-                cuentaJson.put("uuid", syncId);
-                Log.d(TAG, " CUENTA FechaUltimoMovimiento: " + cuenta.fechaUltimoMovimiento);
-                cuentaArray.put(cuentaJson);
+            List<Cuenta> cuentasLocales = cuentaDao.getAll();
+            JSONArray cuentasRemotas = getData("cuenta", "uuid=eq." + syncId);  // <- Aquí va tu línea
+
+            syncCuentas(cuentasLocales, cuentasRemotas, syncId);
+
+            for (Cuenta cuentaLocal : cuentasLocales) {
+                JSONArray movimientosRemotos = getData("movimientos", "idcuenta=eq." + SessionController.configInstance.getIdRemotoCuenta(cuentaLocal.idCuenta));
+                List<Movimiento> movimientosLocales = movimientoDao.getAllOrderedByDateDescForAccount(cuentaLocal.idCuenta);
+                syncMovimientos(movimientosLocales, movimientosRemotos, cuentaLocal.idCuenta);
             }
-            postData("cuenta", cuentaArray);
 
-            Log.d(TAG, "JSON para tabla 'cuenta': " + cuentaArray.toString());
-
-            // Sincronizar movimientos
-            JSONArray movimientosArray = new JSONArray();
-            for (Cuenta cuenta : cuentas) {
-                List<Movimiento> movimientos = movimientoDao.getAllOrderedByDateDescForAccount(cuenta.idCuenta);
-                for (Movimiento movimiento : movimientos) {
-                    JSONObject movimientoJson = new JSONObject();
-                    movimientoJson.put("nombre", movimiento.nombre);
-                    movimientoJson.put("fechamovimiento", movimiento.fechaMovimiento);
-                    movimientoJson.put("cantidadmovida", movimiento.cantidadMovida);
-                    movimientoJson.put("esungasto", movimiento.esUnGasto);
-                    movimientoJson.put("idcuenta", movimiento.idCuenta);
-                    movimientosArray.put(movimientoJson);
-                }
-            }
-            postData("movimientos", movimientosArray);
-            Log.d(TAG, "JSON para tabla 'movimientos': " + movimientosArray.toString());
-
-            // Actualiza la última sincronización del usuario
             SessionController.usuarioActual.fechaUltimaSync = getCurrentDate();
-            UsuarioDAO usuarioDao = new UsuarioDAO(localDb);  // Si tienes un DAO para Usuario
+            UsuarioDAO usuarioDao = new UsuarioDAO(localDb);
             usuarioDao.update(currentUser);
             Log.d(TAG, "Sincronización completada para el usuario existente.");
         }
@@ -270,5 +308,132 @@ public class RemotePostgREST {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
             return dateFormat.format(new Date());
         }
+
+        private boolean safeEqualsDate(String fecha1, String fecha2) { // Intento parsear con o sin hora
+            if (fecha1 == null || fecha2 == null) return false;
+
+            String[] patterns = {
+                    "yyyy-MM-dd HH:mm:ss",
+                    "yyyy-MM-dd"
+            };
+
+            for (String pattern : patterns) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+                    Date date1 = format.parse(fecha1);
+                    Date date2 = format.parse(fecha2);
+                    if (date1 != null && date2 != null && date1.equals(date2)) {
+                        return true;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+
+            Log.e("safeEqualsDate", "No se pudo parsear una o ambas fechas: " + fecha1 + " vs " + fecha2);
+            return false;
+        }
+
+
+
+        private JSONArray getData(String table, String filter) throws Exception { // Esta obtiene datos de las tablas para ver lo que está sincronizado y lo que no
+            URL url = new URL(SUPABASE_URL + table + "?" + filter);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("apikey", SERVICE_ROLE_KEY);
+            conn.setRequestProperty("Authorization", "Bearer " + SERVICE_ROLE_KEY);
+            conn.setRequestProperty("Accept", "application/json");
+
+            InputStream inputStream = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            inputStream.close();
+
+            return new JSONArray(response.toString());
+        }
+
+        private void deleteData(String table, String filter) throws Exception {
+            URL url = new URL(SUPABASE_URL + table + "?" + filter);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setRequestProperty("apikey", SERVICE_ROLE_KEY);
+            conn.setRequestProperty("Authorization", "Bearer " + SERVICE_ROLE_KEY);
+            conn.setRequestProperty("Prefer", "return=minimal");
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 204) {
+                Log.e(TAG, "Error al eliminar de " + table + ": " + conn.getResponseMessage());
+            }
+        }
+
+        private void syncCuentas(List<Cuenta> localCuentas, JSONArray remoteCuentas, int syncId) throws Exception {
+            for (Cuenta local : localCuentas) {
+                boolean found = false;
+                for (int i = 0; i < remoteCuentas.length(); i++) {
+                    JSONObject remote = remoteCuentas.getJSONObject(i);
+                    if (SessionController.configInstance.getIdRemotoCuenta(local.idCuenta) != null) {
+                        found = true;
+
+                        boolean needsUpdate =
+                                remote.optDouble("balancetotal", -1) != local.balanceTotal ||
+                                        !remote.optString("monedaseleccionada", "").equals(local.monedaSeleccionada) ||
+                                        !remote.optString("fechaultimomovimiento", "").equals(local.fechaUltimoMovimiento);
+
+                        if (needsUpdate) {
+                            JSONObject updated = new JSONObject();
+                            updated.put("balancetotal", local.balanceTotal);
+                            updated.put("monedaseleccionada", local.monedaSeleccionada);
+                            updated.put("fechaultimomovimiento", local.fechaUltimoMovimiento);
+
+                            patchData("cuenta", "idcuenta=eq." + remote.getInt("idcuenta"), new JSONArray().put(updated));
+                            Log.d(TAG, "Cuenta actualizada: " + local.nombreCuenta);
+                        }
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    JSONObject nuevaCuenta = new JSONObject();
+                    nuevaCuenta.put("nombrecuenta", local.nombreCuenta);
+                    nuevaCuenta.put("balancetotal", local.balanceTotal);
+                    nuevaCuenta.put("monedaseleccionada", local.monedaSeleccionada);
+                    nuevaCuenta.put("fechaultimomovimiento", local.fechaUltimoMovimiento);
+                    nuevaCuenta.put("uuid", syncId);
+
+                    JSONObject insert = postData("cuenta", new JSONArray().put(nuevaCuenta));
+                    int idRemotoCuenta = insert.getInt("idcuenta");
+                    SessionController.configInstance.saveCuentaRemota(local.idCuenta, idRemotoCuenta);
+
+                    Log.d(TAG, "Cuenta agregada: " + local.nombreCuenta);
+                }
+            }
+
+            // ELIMINACIÓN DE: cuentas que están en remoto pero no en local
+            for (int i = 0; i < remoteCuentas.length(); i++) {
+                JSONObject remote = remoteCuentas.getJSONObject(i);
+                int remoteIdCuenta = remote.getInt("idcuenta");
+
+                boolean existsLocally = false;
+                for (Cuenta local : localCuentas) {
+                    Integer localMappedRemoteId = SessionController.configInstance.getIdRemotoCuenta(local.idCuenta);
+                    if (localMappedRemoteId != null && localMappedRemoteId == remoteIdCuenta) {
+                        existsLocally = true;
+                        break;
+                    }
+                }
+
+                if (!existsLocally) {
+                    deleteData("cuenta", "idcuenta=eq." + remoteIdCuenta);
+                    Log.d(TAG, "Cuenta eliminada: " + remote.getString("nombrecuenta"));
+                }
+            }
+
+        }
+
+
     }
 }

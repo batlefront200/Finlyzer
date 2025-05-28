@@ -67,7 +67,7 @@
                     android:layout_gravity="center"
                     android:max="100"
                     android:progress="80"
-                    app:indicatorColor="@color/verde_llamativo"
+                    app:indicatorColor="@color/loaded_yellow"
                     app:indicatorDirectionCircular="clockwise"
                     app:indicatorInset="8dp"
                     app:indicatorSize="100dp"
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="+50.21€"
-                    android:textColor="@color/verde_llamativo"
+                    android:textColor="@color/loaded_yellow"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:layout_gravity="center" />
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Ganancias brutas este mes"
+                android:text="Progreso del objetivo mensual"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp" />
         </LinearLayout>
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="-2.52%"
-                    android:textColor="@color/verde_llamativo"
+                    android:textColor="@color/rojo_gasto"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:layout_gravity="center" />
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Ganancias relativas este año"
+                android:text="Restante para objetivo mensual"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp" />
         </LinearLayout>

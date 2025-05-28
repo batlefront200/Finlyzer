@@ -3,5 +3,20 @@
     <style name="Base.Theme.Fynlizer" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/verde_llamativo</item>
+        <item name="colorPrimaryVariant">@color/verde_oscuro</item>
+        <item name="colorOnPrimary">@color/verde_casi_negro</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondaryVariant">@color/verde_oscuro</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+        <item name="android:statusBarColor">@color/verde_llamativo</item>
+
+        <item name="colorControlActivated">@color/verde_llamativo</item>
+        <item name="android:colorAccent">@color/verde_llamativo</item> <!-- En algunas APIs sigue usándose -->
+        <item name="android:progressTint">@color/verde_llamativo</item> <!-- En widgets clásicos -->
+        <item name="android:progressBackgroundTint">@color/verde_oscuro</item>
     </style>
 </resources>

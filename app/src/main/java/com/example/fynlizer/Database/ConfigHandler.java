@@ -55,6 +55,10 @@ public class ConfigHandler {
             config.put("autocomplete_enabled", true);
             config.put("currency", "EUR");
             config.put("syncId", "0");
+            config.put("objetivomensual", "0");
+
+            config.put("cuentas_remotas", new JSONObject()); // Mapa IDs cuentas remotas
+            config.put("movimientos_remotos", new JSONObject()); // Mapa IDs movimientos remotos
         } catch (JSONException e) {
             throw new RuntimeException("Error creando configuración por defecto", e);
         }
@@ -92,6 +96,19 @@ public class ConfigHandler {
         }
     }
 
+    public void setObjetivoMensual(int value) {
+        try {
+            config.put("objetivomensual", value);
+            saveConfig();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getObjetivoMensual() {
+        return config.optInt("objetivomensual", 0);
+    }
+
     public int getSyncId() {
         return config.optInt("syncId", 0);
     }
@@ -122,4 +139,52 @@ public class ConfigHandler {
             e.printStackTrace();
         }
     }
+
+
+    /* MAPEO DE IDS */
+    public void saveCuentaRemota(int idLocal, int idRemoto) {
+        try {
+            JSONObject cuentas = config.optJSONObject("cuentas_remotas");
+            if (cuentas == null) {
+                cuentas = new JSONObject();
+                config.put("cuentas_remotas", cuentas);
+            }
+            cuentas.put(String.valueOf(idLocal), idRemoto);
+            saveConfig();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Integer getIdRemotoCuenta(int idLocal) {
+        JSONObject cuentas = config.optJSONObject("cuentas_remotas");
+        if (cuentas != null) {
+            return cuentas.optInt(String.valueOf(idLocal), -1) != -1 ? cuentas.optInt(String.valueOf(idLocal)) : null;
+        }
+        return null;
+    }
+
+    public void saveMovimientoRemoto(int idLocal, int idRemoto) {
+        try {
+            JSONObject movimientos = config.optJSONObject("movimientos_remotos");
+            if (movimientos == null) {
+                movimientos = new JSONObject();
+                config.put("movimientos_remotos", movimientos);
+            }
+            movimientos.put(String.valueOf(idLocal), idRemoto);
+            saveConfig();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Integer getIdRemotoMovimiento(int idLocal) {
+        JSONObject movimientos = config.optJSONObject("movimientos_remotos");
+        if (movimientos != null) {
+            return movimientos.optInt(String.valueOf(idLocal), -1) != -1 ? movimientos.optInt(String.valueOf(idLocal)) : null;
+        }
+        return null;
+    }
+
+
 }

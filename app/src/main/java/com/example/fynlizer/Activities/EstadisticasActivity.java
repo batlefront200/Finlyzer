@@ -1,6 +1,8 @@
 package com.example.fynlizer.Activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -177,74 +179,52 @@ public class EstadisticasActivity extends AppCompatActivity {
         /* ESTADISTICAS GRAFICOS */
         /* ESTADISTICAS GRAFICOS */
 
-        /* Porcentaje de ingresos respecto al total de movimientos */
-        TextView porcentajeIngresosLabel = findViewById(R.id.circle1_text);
-        ProgressBar barraPorcentajeIngresos = findViewById(R.id.circle1_progress);
+        TextView c1_t = findViewById(R.id.circle1_text);
+        ProgressBar c1_p = findViewById(R.id.circle1_progress);
+        TextView c1_d = findViewById(R.id.circle1_description);
 
-        List<Movimiento> ingresosMes = movimientoDAO.getOnlyIngresosByCuentaEnMesActual(SessionController.cuentaActual.idCuenta);
-        List<Movimiento> todosMovimientosMes = movimientoDAO.getMovimientosByCuentaEnMesActual(SessionController.cuentaActual.idCuenta);
+        TextView c2_t = findViewById(R.id.circle2_text);
+        ProgressBar c2_p = findViewById(R.id.circle2_progress);
+        TextView c2_d = findViewById(R.id.circle2_description);
 
-        /* Obtener Ingresos y Gastos este mes */
-        MovimientoDAO mvDao = new MovimientoDAO(SessionController.dbInstance);
-        List<Movimiento> movimientosEsteMes = mvDao.getMovimientosByCuentaEnMesActual(SessionController.cuentaActual.idCuenta);
+        int objetivoMensual = SessionController.configInstance.getObjetivoMensual();
 
-        double ingresos = 0;
-        double gastos = 0;
+        if(objetivoMensual > 0) {
+            List<Movimiento> ingresosMes = movimientoDAO.getOnlyIngresosByCuentaEnMesActual(SessionController.cuentaActual.idCuenta);
 
-        for (Movimiento movimientoActual : movimientosEsteMes) {
-            if(movimientoActual.esUnGasto) {
-                gastos += movimientoActual.cantidadMovida;
-            } else {
+            double ingresos = 0;
+            for (Movimiento movimientoActual : ingresosMes) {
                 ingresos += movimientoActual.cantidadMovida;
             }
-        }
 
+            if(ingresos >= objetivoMensual) { // Objetivos cumplidos
+                c1_t.setText("100%");
+                c1_p.setProgress(100);
 
-        double sumaIngresos = ingresos;
-        double totalMovido = ingresos + gastos;
+                c2_t.setTextColor(Color.parseColor("#bdf352"));
+                c2_t.setText(String.format(Locale.US, "+%.2f€", (ingresos - objetivoMensual)));
+                c2_p.setProgress(100);
 
-        int porcentajeIngresos = 0;
-        if (totalMovido > 0) {
-            porcentajeIngresos = (int) Math.round((sumaIngresos * 100.0) / totalMovido);
-        }
-
-        if(sumaIngresos > 99.99) {
-            porcentajeIngresosLabel.setTextSize(26);
-        }
-
-        barraPorcentajeIngresos.setProgress(porcentajeIngresos);
-        porcentajeIngresosLabel.setText(String.format(Locale.US, "+%.2f€", sumaIngresos, porcentajeIngresos));
-
-
-        /* Porcentaje de ingresos respecto al total del año */
-        TextView porcentajeAnualLabel = findViewById(R.id.circle2_text);
-        ProgressBar barraPorcentajeAnual = findViewById(R.id.circle2_progress);
-
-        List<Movimiento> movimientosAnuales = movimientoDAO.getMovimientosByCuentaEnAnoActual(SessionController.cuentaActual.idCuenta);
-        double ingresosAnuales = 0.0;
-        double gastosAnuales = 0.0;
-
-        for (Movimiento movimiento : movimientosAnuales) {
-            if (movimiento.esUnGasto) {
-                gastosAnuales += movimiento.cantidadMovida;
             } else {
-                ingresosAnuales += movimiento.cantidadMovida;
+                double progress = ((ingresos * 100) / objetivoMensual);
+                c1_t.setText(String.format(Locale.US, "%.1f%%", progress));
+                c1_p.setProgress((int)Math.round(progress));
+
+                c2_t.setText(String.format(Locale.US, "+%.2f€", (objetivoMensual - ingresos)));
+                c2_p.setProgress((int)Math.round(progress));
             }
+
+        } else {
+            c1_t.setText("??");
+            c1_t.setTextColor(Color.parseColor("#fae24b"));
+            c1_p.setProgress(0);
+            c1_d.setText("Establece un objetivo mensual");
+
+            c2_t.setText("??");
+            c2_t.setTextColor(Color.parseColor("#fae24b"));
+            c2_p.setProgress(0);
+            c2_d.setText("Establece un objetivo mensual");
         }
-
-        double totalAnualMovido = ingresosAnuales + gastosAnuales;
-        int porcentajeAnual = 0;
-
-        if (totalAnualMovido > 0) {
-            porcentajeAnual = (int) Math.round((ingresosAnuales * 100.0) / totalAnualMovido);
-        }
-
-        if(ingresosAnuales > 99.99) {
-            porcentajeAnualLabel.setTextSize(24);
-        }
-
-        barraPorcentajeAnual.setProgress(porcentajeAnual);
-        porcentajeAnualLabel.setText(String.format(Locale.US, "+%.2f€", ingresosAnuales));
 
     }
 }

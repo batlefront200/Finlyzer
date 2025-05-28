@@ -41,6 +41,8 @@ public class NewAccountActivity extends AppCompatActivity {
             }
         });*/
 
+        CuentaDAO cuentaDao = new CuentaDAO(SessionController.dbInstance);
+
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +56,10 @@ public class NewAccountActivity extends AppCompatActivity {
                     balanceFloat = Math.round(balanceFloat * 100.0) / 100.0; // Redondeo a 2 decimales
 
                     String editableNombreCuenta = cuentaNombre.getText().toString();
+                    if(cuentaDao.existeNombreCuentaParaUsuario(SessionController.usuarioActual.UUID, editableNombreCuenta)) {
+                        Toast.makeText(NewAccountActivity.this, "Ya existe una cuenta con este nombre!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
                     if(!editableNombreCuenta.isEmpty() & editableNombreCuenta.length() < 30) {
 

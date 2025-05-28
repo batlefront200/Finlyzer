@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -122,6 +123,59 @@ public class AjustesActivity extends AppCompatActivity {
                             dialog.dismiss();
                         })
                         .show();
+            }
+        });
+
+
+        /* OBJETIVOS MENSUALES */
+        Button establecerObj = findViewById(R.id.set_objetivo);
+        EditText objMensualInp = findViewById(R.id.obj_mensual);
+        TextView objacttext = findViewById(R.id.objactual_txt);
+        int objetivoMensual = SessionController.configInstance.getObjetivoMensual();
+
+        if(objetivoMensual > 0) {
+            objacttext.setText("Objetivo actual: " + objetivoMensual + "€");
+        } else {
+            objacttext.setText("Objetivo actual no definido");
+        }
+
+        establecerObj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    // Meto el campo sustituyendo , por . para evitar errores de parseo
+                    double balanceFloat = Double.parseDouble(objMensualInp.getText().toString().replace(',', '.'));
+                    int objMensualInt = (int)Math.round(balanceFloat);
+
+                    if(objMensualInt > 0) {
+                        SessionController.configInstance.setObjetivoMensual(objMensualInt);
+                        Toast.makeText(AjustesActivity.this, "Objetivo mensual cambiado correctamente", Toast.LENGTH_SHORT).show();
+                        objacttext.setText("Objetivo actual: " + SessionController.configInstance.getObjetivoMensual() + "€");
+                    } else {
+                        SessionController.configInstance.setObjetivoMensual(0);
+                        Toast.makeText(AjustesActivity.this, "El objetivo debe ser superior a 1", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } catch (Exception e) {
+                    Toast.makeText(AjustesActivity.this, "No se pudo aplicar el objetivo mensual", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+
+        Button cerrarSesion = findViewById(R.id.cerrarsesion);
+        cerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    SessionController.cuentaActual = null;
+                    Intent intent = new Intent(AjustesActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(AjustesActivity.this, "No se pudo aplicar el objetivo mensual", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
